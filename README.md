@@ -18,6 +18,8 @@ Este é um jogo de Natal desenvolvido no Pico-8 usando Lua. No jogo, o Papai Noe
 - **Controles:** Use as teclas direcionais para mover o Papai Noel e suas renas. Use a tecla `Z` para lançar os presentes.
 - **Pontuação:** Entregue presentes nas casas para aumentar sua pontuação, mas evite colidir com as casas e os pássaros.
 
+![Imagem demostrando tela do jogo](demonstracao.png)
+
 ## Contribuição
 Sinta-se à vontade para contribuir com melhorias no código ou adicionar novos recursos ao jogo.
 
