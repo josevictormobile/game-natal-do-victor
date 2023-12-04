@@ -9,7 +9,7 @@ Este é um jogo de Natal desenvolvido no Pico-8 usando Lua. No jogo, o Papai Noe
 
 ### Instruções para Rodar o Jogo
 1. Clone ou faça o download do repositório.
-2. Abra o Pico-8.
+2. Abra o Pico-8 (Existe uma versão online e gratuita para fins educativos no link a seguir: [pico-8-edu](https://www.pico-8-edu.com/)).
 3. Carregue o código Lua do jogo no Pico-8.
 4. No Pico-8, execute o jogo digitando `RUN` no console e pressionando Enter.
 
