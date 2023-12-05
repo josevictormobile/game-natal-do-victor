@@ -129,7 +129,7 @@ end
 function check_gift_delivery()
     for i = 1, #houses do
         if gift_p.x >= houses[i].x and gift_p.x <= houses[i].x + 8
-        and gift_p.y <= houses[i].y then
+        and gift_p.y == houses[i].y then
             score += 1
         end
     end
