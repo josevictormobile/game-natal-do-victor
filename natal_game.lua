@@ -3,21 +3,21 @@ spr_santa = 19
 spr_house = 2
 spr_renas = 20
 spr_gift = 3
-spr_bird = 5
+spr_bird = 4
 
--- variaveis de posicao
-renas_p = {x = 68, y = 110}
+-- hitboxes
+renas_p = {x = 68, y = 110, w = 8, h = 8}
 gift_p = {x = -8, y = -8}
-santa_p = {x = 60, y = 110}
+santa_p = {x = 60, y = 110, w = 8, h = 8}
 houses = {
-    { x = 120, y = 110 },
-    { x = 180, y = 110 },
-    { x = 240, y = 110 },
-    { x = 160, y = 110 }
+    { x = 120, y = 110, w = 8, h = 8 },
+    { x = 180, y = 110, w = 8, h = 8  },
+    { x = 240, y = 110, w = 8, h = 8  },
+    { x = 160, y = 110, w = 8, h = 8  }
 }
 birds = {
-    {x = 120, y = 50},
-    {x = 180, y = 90}
+    {x = 120, y = 50, w = 8, h = 8 },
+    {x = 180, y = 90, w = 8, h = 8 }
 }
 
 -- variaveis de status
@@ -107,9 +107,22 @@ function update_birds()
     end
 end
 
+function check_hitbox_collision(hitbox1, hitbox2)
+    -- Calcula os limites dos retângulos
+    local left1, right1, up1, down1 = hitbox1.x, hitbox1.x + hitbox1.w, hitbox1.y, hitbox1.y + hitbox1.h
+    local left2, right2, up2, down2 = hitbox2.x, hitbox2.x + hitbox2.w, hitbox2.y, hitbox2.y + hitbox2.h
+
+    -- Verifica a colisão entre os retângulos
+    if right1 >= left2 and left1 <= right2 and down1 >= up2 and up1 <= down2 then
+        return true  -- Há colisão
+    else
+        return false  -- Não há colisão
+    end
+end
+
 function check_collision()
     for i = 1, #houses do
-        if santa_p.x == houses[i].x and santa_p.y == houses[i].y then
+        if check_hitbox_collision(santa_p, houses[i]) then
             hp -= 1
             if hp == 0 then
                 game_over = true
@@ -117,7 +130,7 @@ function check_collision()
         end
     end
     for i = 1, #birds do
-        if santa_p.x == birds[i].x and santa_p.y == birds[i].y then
+        if check_hitbox_collision(santa_p, birds[i]) then
             hp -= 1
             if hp == 0 then
                 game_over = true
@@ -136,7 +149,7 @@ function check_gift_delivery()
 end
 
 function background_draw()
-    rectfill(0, 118, 127, 127, 7) -- Um retângulo azul para o céu
+    rectfill(0, 118, 127, 127, 7) -- um retれけngulo azul para o cれたu
     pset(10, 78, 7)
     pset(21, 12, 7)
     pset(43, 78, 7)
@@ -154,7 +167,7 @@ function _draw()
         cls()
         print("game over! score: " .. score, 40, 60, 7)
     else
-        cls() -- Limpa a tela
+        cls() -- limpa a tela
         background_draw()
        	load_sprites() -- atualizar os sprites na tela
         print("score:" .. score .."\nhp:" .. hp, 4, 4, 7) -- exibir a pontuacao na tela
