@@ -29,8 +29,8 @@ function start_values()
         { x = 160, y = 110, w = 8, h = 8  }
     }
     birds = {
-        {x = 120, y = 50, w = 8, h = 8 },
-        {x = 180, y = 90, w = 8, h = 8 }
+        {x = 120, y = 50, w = 6, h = 4 },
+        {x = 180, y = 90, w = 6, h = 4 }
     }
 end
 
