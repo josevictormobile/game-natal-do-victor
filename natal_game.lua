@@ -48,11 +48,12 @@ function _update()
     update_houses()
     update_birds()
     update_gifts()
+    santa_collision_animation()
 end
 
 function _draw()
     if menu_fase then
-        cls()
+        cls()--♥
         print("natal do victor", 30, 10, 7)
         background_draw()
         menu()
@@ -64,8 +65,23 @@ function _draw()
         cls() -- limpa a tela
         background_draw()
        	load_sprites() -- atualizar os sprites na tela
-        print("score:" .. score .."\nhp:" .. hp, 4, 4, 7) -- exibir a pontuacao na tela
+        if (hp == 3) print("score:" .. score .."\nhp: ♥ ♥ ♥", 4, 4, 7)
+        if (hp == 2) print("score:" .. score .."\nhp: ♥ ♥ ", 4, 4, 7)
+        if (hp == 1) print("score:" .. score .."\nhp: ♥", 4, 4, 7)
 	end
+end
+
+function load_sprites()
+    -- definir os sprites
+    spr(spr_santa, santa_p.x, santa_p.y, 1, 1)
+    spr(spr_renas, renas_p.x, renas_p.y, 1, 1)
+    spr(spr_gift, gift_p.x, gift_p.y, 1, 1)
+    for i = 1, #houses do
+        spr(spr_house, houses[i].x, houses[i].y, 1, 1)
+    end
+    for i = 1, #birds do
+        spr(spr_bird, birds[i].x, birds[i].y, 1, 1)
+    end
 end
 
 function background_draw()
@@ -89,19 +105,6 @@ function menu()
         else
             print(menu_items[i], 30, 30 + i * 10, 7)
         end
-    end
-end
-
-function load_sprites()
-    -- definir os sprites
-    spr(spr_santa, santa_p.x, santa_p.y, 1, 1)
-    spr(spr_renas, renas_p.x, renas_p.y, 1, 1)
-    spr(spr_gift, gift_p.x, gift_p.y, 1, 1)
-    for i = 1, #houses do
-        spr(spr_house, houses[i].x, houses[i].y, 1, 1)
-    end
-    for i = 1, #birds do
-        spr(spr_bird, birds[i].x, birds[i].y, 1, 1)
     end
 end
 
@@ -193,20 +196,52 @@ function check_hitbox_collision(hitbox1, hitbox2)
 end
 
 function check_collision()
-    for i = 1, #houses do
-        if check_hitbox_collision(santa_p, houses[i]) then
-            hp -= 1
-            if hp <= 0 then
-                game_over = true
+    if not santa_collision then
+        for i = 1, #houses do
+            if check_hitbox_collision(santa_p, houses[i]) then
+                set_santa_collision()
+            end
+        end
+        for i = 1, #birds do
+            if check_hitbox_collision(santa_p, birds[i]) then
+                set_santa_collision()
             end
         end
     end
-    for i = 1, #birds do
-        if check_hitbox_collision(santa_p, birds[i]) then
-            hp -= 1
-            if hp <= 0 then
-                game_over = true
-            end
+end
+
+function set_santa_collision()
+    santa_collision = true
+    collision_timer = 
+    {first = time() + 0.3, 
+     second = time() + 0.6, 
+     third = time() + 0.9, 
+     fourth = time() + 1.2}
+     hp -= 1
+     if hp <= 0 then
+        game_over = true
+     end
+end
+
+function santa_collision_animation()
+    if santa_collision then
+        if time() > collision_timer.third then
+            -- Muda a cor do Papai Noel  
+            spr_santa = 19
+            spr_renas = 20
+            santa_collision = false
+        elseif time() > collision_timer.second then
+            -- Muda a cor do Papai Noel  
+            spr_santa = 10
+            spr_renas = 11
+        elseif time() > collision_timer.first then
+            -- Restaura a cor do Papai Noel 
+            spr_santa = 19
+            spr_renas = 20
+        else
+            -- Muda a cor do Papai Noel 
+            spr_santa = 10
+            spr_renas = 11
         end
     end
 end
