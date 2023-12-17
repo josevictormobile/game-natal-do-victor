@@ -2,14 +2,19 @@ function start_values()
     -- variaveis de status
     game_over = false
     gift_fall = false
-    santa_jump = false
-    jump_height = 95
+    santa_jumping = false
+    jump_height = 85
     santa_speed = 2
+    scenario_speed = 1
     score = 0
-    hp = 3
+    hp = 4
     menu_fase = true
     menu_items = {"Jogar", "Reiniciar"}
     selected_item = 1
+    birds_number = 2
+    santa_falling = false
+    santa_sleigh = true
+    ufo_speed = 8
 
     -- definicao dos sprites
     spr_santa = 19
@@ -17,10 +22,11 @@ function start_values()
     spr_renas = 20
     spr_gift = 3
     spr_bird = 4
+    spr_ufo = 6
 
     -- hitboxes
     renas_p = {x = 68, y = 110, w = 8, h = 8}
-    gift_p = {x = -8, y = -8}
+    gift = {x = -8, y = -8, w = 3, h = 5}
     santa_p = {x = 60, y = 110, w = 8, h = 8}
     houses = {
         { x = 120, y = 110, w = 8, h = 8 },
@@ -30,8 +36,15 @@ function start_values()
     }
     birds = {
         {x = 120, y = 50, w = 6, h = 4 },
-        {x = 180, y = 90, w = 6, h = 4 }
+        {x = 180, y = 90, w = 6, h = 4 },
+        {x = 235, y = 50, w = 6, h = 4 },
+        {x = 249, y = 60, w = 6, h = 4 },
+        {x = 233, y = 05, w = 6, h = 4 },
+        {x = 257, y = 110, w = 6, h = 4 },
+        {x = 239, y = 90, w = 6, h = 4 }
     }
+    floor = {x = 0, y = 115, w = 127, h = 17}
+    ufo = {x = -10, y = -10, w = 2, h = 2}
 end
 
 function _init()
@@ -49,11 +62,15 @@ function _update()
     update_birds()
     update_gifts()
     santa_collision_animation()
+    update_speed()
+    update_reindeers()
+    check_santa_reindeer_collision()
+    update_ufo()
 end
 
 function _draw()
     if menu_fase then
-        cls()--♥
+        cls()
         print("natal do victor", 30, 10, 7)
         background_draw()
         menu()
@@ -65,6 +82,7 @@ function _draw()
         cls() -- limpa a tela
         background_draw()
        	load_sprites() -- atualizar os sprites na tela
+        if (hp == 4) print("score:" .. score .."\nhp: ♥ ♥ ♥ ♥", 4, 4, 7)
         if (hp == 3) print("score:" .. score .."\nhp: ♥ ♥ ♥", 4, 4, 7)
         if (hp == 2) print("score:" .. score .."\nhp: ♥ ♥ ", 4, 4, 7)
         if (hp == 1) print("score:" .. score .."\nhp: ♥", 4, 4, 7)
@@ -75,7 +93,8 @@ function load_sprites()
     -- definir os sprites
     spr(spr_santa, santa_p.x, santa_p.y, 1, 1)
     spr(spr_renas, renas_p.x, renas_p.y, 1, 1)
-    spr(spr_gift, gift_p.x, gift_p.y, 1, 1)
+    spr(spr_gift, gift.x, gift.y, 1, 1)
+    spr(spr_ufo, ufo.x, ufo.y, 1, 1)
     for i = 1, #houses do
         spr(spr_house, houses[i].x, houses[i].y, 1, 1)
     end
@@ -133,52 +152,124 @@ function update_menu()
 end
 
 function update_santa()
-    if btn(0) then
-        santa_p.x -= santa_speed
-        renas_p.x -= santa_speed
-    end
-    if btn(1) then
-        santa_p.x += santa_speed
-        renas_p.x += santa_speed
-    end
-    if btn(2) then
-        santa_p.y -= santa_speed
-        renas_p.y -= santa_speed
-    end
-    if btn(3) then
-        santa_p.y += santa_speed
-        renas_p.y += santa_speed
-    end
-    if btn(5) then
-        gift_p.x = santa_p.x
-        gift_p.y = santa_p.y
-        gift_fall = true
+    if santa_sleigh then
+        if btn(0) and santa_p.x > -2 then
+            santa_p.x -= santa_speed
+            renas_p.x -= santa_speed
+        end
+        if btn(1) and santa_p.x < 120 then
+            santa_p.x += santa_speed
+            renas_p.x += santa_speed
+        end
+        if btn(2) and santa_p.y > -2 then
+            santa_p.y -= santa_speed
+            renas_p.y -= santa_speed
+        end
+        if btn(3) and santa_p.y < 110 then
+            santa_p.y += santa_speed
+            renas_p.y += santa_speed
+        end
+        if btn(5) and not gift_fall then
+            gift.x = santa_p.x
+            gift.y = santa_p.y
+            gift_fall = true
+        end
+    elseif santa_falling then
+        spr_santa = 1
+        santa_p.y += 1
+        
+        if santa_p.y >=110 then
+            santa_falling = false
+            if santa_p.y > 110 then
+                santa_p.y = 110
+            end
+        end
+    else
+        --renas_p.x += santa_speed
+        if btn(0) and santa_p.x > -2 then
+            santa_p.x -= santa_speed
+        end
+        if btn(1) and santa_p.x < 120 then
+            santa_p.x += santa_speed
+        end
+        if btnp(2) then
+            santa_jumping = true
+        end
+        if santa_jumping then
+            santa_p.y -= 2
+        end
+        if santa_p.y <= jump_height then
+            santa_jumping = false
+            santa_falling = true
+        end
     end
 end
 
 function update_gifts()
     if gift_fall then
-        gift_p.x -= 1
-        gift_p.y += 2
+        gift.x -= scenario_speed
+        gift.y += (scenario_speed*2)
+    else
+        gift.x -= scenario_speed
     end
 end
 
 function update_houses()
+    new_house_position = flr(rnd(100 + 1)) + 150
     for i = 1, #houses do
-        houses[i].x -= 1
+        houses[i].x -= scenario_speed
         if houses[i].x < -8 then
-            houses[i].x = 240
+            houses[i].x = new_house_position
         end
     end
 end
 
 function update_birds()
-    for i = 1, #birds do
-        birds[i].x -= 2
+    if score==5 and birds_number<3 then
+        birds_number = 3
+    elseif score==10 and birds_number<4 then
+        birds_number = 4
+    elseif score==15 and birds_number<5 then
+        birds_number = 5
+    elseif score==20 and birds_number<6 then
+        birds_number = 6
+    elseif score==25 and birds_number<7 then
+        birds_number = 7
+    end
+    for i = 1, birds_number do
+        birds[i].x -= (scenario_speed * 2)
         if birds[i].x < -8 then
             birds[i].x = 240
             birds[i].y = rnd(108)
         end
+    end
+end
+
+function update_reindeers()
+    if not santa_sleigh then
+        renas_p.x += santa_speed
+        if renas_p.x > 127 then
+            renas_p.x = -8
+            renas_p.y = 105
+        end
+    end
+end
+
+function update_ufo()
+    if score > 46 then
+        ufo.x -= ufo_speed
+        if ufo.x < -10 then
+            ufo.x = flr(rnd(100 + 1)) + 150
+            ufo.y = rnd(108)
+        end
+    end
+end
+
+function update_speed()
+    if score==20 and scenario_speed==1 then
+        scenario_speed = 1.2
+    elseif score==30 and scenario_speed==1.6 then
+        scenario_speed = 1.4
     end
 end
 
@@ -207,6 +298,9 @@ function check_collision()
                 set_santa_collision()
             end
         end
+        if check_hitbox_collision(santa_p, ufo) then
+            set_santa_collision()
+        end
     end
 end
 
@@ -218,7 +312,10 @@ function set_santa_collision()
      third = time() + 0.9, 
      fourth = time() + 1.2}
      hp -= 1
-     if hp <= 0 then
+     if hp == 1 then
+        santa_sleigh = false
+        santa_falling = true
+     elseif hp <=0 then
         game_over = true
      end
 end
@@ -226,31 +323,55 @@ end
 function santa_collision_animation()
     if santa_collision then
         if time() > collision_timer.third then
-            -- Muda a cor do Papai Noel  
-            spr_santa = 19
-            spr_renas = 20
+            -- Restaura a cor do Papai Noel  
+            santa_sprite_color_change(true)
             santa_collision = false
         elseif time() > collision_timer.second then
             -- Muda a cor do Papai Noel  
-            spr_santa = 10
-            spr_renas = 11
+            santa_sprite_color_change(false)
         elseif time() > collision_timer.first then
             -- Restaura a cor do Papai Noel 
-            spr_santa = 19
-            spr_renas = 20
+            santa_sprite_color_change(true)
         else
             -- Muda a cor do Papai Noel 
-            spr_santa = 10
-            spr_renas = 11
+            santa_sprite_color_change(false)
         end
+    end
+end
+
+function santa_sprite_color_change(normal)
+    if santa_sleigh and normal then
+        spr_santa = 19
+        spr_renas = 20
+    elseif santa_sleigh and not normal then
+        spr_santa = 10
+        spr_renas = 11
+    elseif not santa_sleigh and normal then
+        spr_santa = 1
+    elseif not santa_sleigh and not normal then
+        spr_santa = 0
     end
 end
 
 function check_gift_delivery()
     for i = 1, #houses do
-        if gift_p.x >= houses[i].x and gift_p.x <= houses[i].x + 8
-        and gift_p.y == houses[i].y then
+        if check_hitbox_collision(gift,houses[i]) then
             score += 1
+            gift.x = -8
+            gift.y = -8
+            gift_fall = false
         end
+    end
+    if gift_fall and check_hitbox_collision(gift,floor) then
+        score -= 1
+        gift_fall = false
+    end
+end
+
+function check_santa_reindeer_collision()
+    if not santa_sleigh and check_hitbox_collision(santa_p, renas_p) then
+        santa_sleigh = true
+        spr_santa = 24
+        spr_renas = 25
     end
 end
