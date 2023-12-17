@@ -39,8 +39,8 @@ Este é um jogo de Natal desenvolvido no Pico-8 usando Lua. No jogo, o Papai Noe
 
 ![Imagem demostrando tela do jogo](demonstracao.png)
 
-Teste o game no seu navegador através do link abaixo:
-<a href="https://josevictormobile.itch.io/natal-do-victor-o-primeiro-titulo-preguicoso" target="_blank">josevictormobile.itch.io/natal-do-victor</a>
+Teste o game no seu navegador através do link:
+<a href="https://josevictormobile.itch.io/natal-do-victor-o-primeiro-titulo-preguicoso" target="_blank">josevictormobile.itch.io/natal-do-victor-o-primeiro-titulo-preguicoso</a>
 
 ## Contribuição
 Sinta-se à vontade para contribuir com melhorias no código ou adicionar novos recursos ao jogo.
