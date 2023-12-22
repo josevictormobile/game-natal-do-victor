@@ -19,13 +19,14 @@ function start_values()
     star_x = 120
     star_y = 0
     star_speed = 3
-    release_ufo = true
+    release_ufo = false
     left_gift_x = -10
     instrucoes_fase = false
     release_wiseman_staff = false
     staff_rolling = false
     santa_with_staff = false
     staff_charge = 0
+    release_time_wiseman_staff = 30
 
     -- definicao dos sprites
     spr_santa = 19
@@ -400,7 +401,7 @@ function update_ufo()
 end
 
 function update_wiseman_staff()
-    if (((flr(time()) + 1) % 5) == 0) and not santa_with_staff then
+    if (((flr(time()) + 1) % release_time_wiseman_staff) == 0) and not santa_with_staff then
         release_wiseman_staff = true
     end
     if release_wiseman_staff and not staff_rolling then
